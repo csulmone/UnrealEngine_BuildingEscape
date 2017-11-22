@@ -1,7 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Grabber.h"
-
+#include "GameFramework/Actor.h"
+#include "Engine/World.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values for this component's properties
 UGrabber::UGrabber()
@@ -10,7 +12,6 @@ UGrabber::UGrabber()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
 }
 
 
@@ -18,9 +19,6 @@ UGrabber::UGrabber()
 void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
-
-	UE_LOG(LogTemp, Warning, TEXT("Grabber Report"));
-	
 }
 
 
@@ -29,6 +27,14 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
+    FVector loc;
+    FRotator rot;
+    GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(loc, rot);
+    
+    FVector traceEnd = loc + rot.Vector() * _reach;
+
+    DrawDebugLine(GetWorld(), loc, traceEnd, FColor(255, 0, 0), false, 0.f, 0.f, 10.f);
+
+	//UE_LOG(LogTemp, Warning, TEXT("%s|%s"), *loc.ToString(), *rot.ToString());
 }
 
