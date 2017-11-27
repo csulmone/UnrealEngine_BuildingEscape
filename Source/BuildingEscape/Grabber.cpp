@@ -35,6 +35,12 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 
     DrawDebugLine(GetWorld(), loc, traceEnd, FColor(255, 0, 0), false, 0.f, 0.f, 10.f);
 
-	//UE_LOG(LogTemp, Warning, TEXT("%s|%s"), *loc.ToString(), *rot.ToString());
+    FHitResult hr;
+    FCollisionObjectQueryParams coqp = { ECollisionChannel::ECC_PhysicsBody };
+    FCollisionQueryParams tp = { FName(TEXT("")), false, GetOwner() };
+    if (GetWorld()->LineTraceSingleByObjectType(hr, loc, traceEnd, coqp, tp))
+    {
+	    UE_LOG(LogTemp, Warning, TEXT("Hit %s"), *hr.Actor.Get()->GetName());
+    }
 }
 
