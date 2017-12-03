@@ -5,6 +5,7 @@
 #include "Engine/World.h"
 #include "DrawDebugHelpers.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
+#include "Components/InputComponent.h"
 
 // Sets default values for this component's properties
 UGrabber::UGrabber()
@@ -12,9 +13,17 @@ UGrabber::UGrabber()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
 }
 
+void UGrabber::Grab()
+{
+    UE_LOG(LogTemp, Warning, TEXT("Grab pressed"));
+}
+
+void UGrabber::Release()
+{
+    UE_LOG(LogTemp, Warning, TEXT("Grab released"));
+}
 
 // Called when the game starts
 void UGrabber::BeginPlay()
@@ -22,9 +31,24 @@ void UGrabber::BeginPlay()
 	Super::BeginPlay();
 
     _physicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-    if (!_physicsHandle)
+    if (_physicsHandle)
+    {
+
+    }
+    else
     {
 	    UE_LOG(LogTemp, Error, TEXT("Missing physics handle component from %s"), *GetOwner()->GetName());
+    }
+
+    _inputHandle = GetOwner()->FindComponentByClass<UInputComponent>();
+    if (_inputHandle)
+    {
+        _inputHandle->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
+        _inputHandle->BindAction("Grab", IE_Released, this, &UGrabber::Release);
+    }
+    else
+    {
+	    UE_LOG(LogTemp, Error, TEXT("Missing input handle component from %s"), *GetOwner()->GetName());
     }
 }
 

@@ -3,6 +3,7 @@
 #pragma once
 
 class UPhysicsHandleComponent;
+class UInputComponent;
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
@@ -30,4 +31,8 @@ private:
     float _reach = 100.f;
 
     UPhysicsHandleComponent* _physicsHandle = nullptr;
+    UInputComponent* _inputHandle = nullptr;
+
+    void Grab();
+    void Release();
 };
