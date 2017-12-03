@@ -2,6 +2,8 @@
 
 #pragma once
 
+class UPhysicsHandleComponent;
+
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Grabber.generated.h"
@@ -26,4 +28,6 @@ public:
 
 private:
     float _reach = 100.f;
+
+    UPhysicsHandleComponent* _physicsHandle = nullptr;
 };
