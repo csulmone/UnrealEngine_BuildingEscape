@@ -18,19 +18,16 @@ UGrabber::UGrabber()
 
 void UGrabber::Grab()
 {
-    UE_LOG(LogTemp, Warning, TEXT("Grab pressed"));
-
     auto hr = GetFirstPhysicsBodyInReach();
     if (hr.GetActor())
     {
-        _physicsHandle->GrabComponent(hr.GetComponent(), NAME_None, hr.Actor->GetActorLocation(), true);
+        _physicsHandle->GrabComponentAtLocationWithRotation(hr.GetComponent(),
+            NAME_None, hr.GetActor()->GetActorLocation(), FRotator());
     }
 }
 
 void UGrabber::Release()
 {
-    UE_LOG(LogTemp, Warning, TEXT("Grab released"));
-
     _physicsHandle->ReleaseComponent();
 }
 
@@ -61,12 +58,8 @@ void UGrabber::SetupInputComponent()
 void UGrabber::FindPhysicsHandleComponent()
 {
     _physicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-    if (_physicsHandle)
-    {
-
-    }
-    else
-    {
+    if (_physicsHandle == nullptr)
+    { 
         UE_LOG(LogTemp, Error, TEXT("Missing physics handle component from %s"), *GetOwner()->GetName());
     }
 }
@@ -76,35 +69,34 @@ void UGrabber::FindPhysicsHandleComponent()
 void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-    FVector loc;
-    FRotator rot;
-    GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(loc, rot);
-
-    FVector traceEnd = loc + rot.Vector() * _reach;
-
+    FVector start, end;
+    GetReachLineStartAndEnd(start, end);
     if (_physicsHandle->GrabbedComponent)
     {
-        _physicsHandle->SetTargetLocation(traceEnd);
+        _physicsHandle->SetTargetLocation(end);
     }
 }
 
 const FHitResult UGrabber::GetFirstPhysicsBodyInReach()
 {
-    FVector loc;
-    FRotator rot;
-    GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(loc, rot);
-
-    FVector traceEnd = loc + rot.Vector() * _reach;
 
     FHitResult hr;
     FCollisionObjectQueryParams coqp = { ECollisionChannel::ECC_PhysicsBody };
     FCollisionQueryParams tp = { FName(TEXT("")), false, GetOwner() };
-    if (GetWorld()->LineTraceSingleByObjectType(hr, loc, traceEnd, coqp, tp))
+    FVector start, end;
+    GetReachLineStartAndEnd(start, end);
+    if (GetWorld()->LineTraceSingleByObjectType(hr, start, end, coqp, tp))
     {
         UE_LOG(LogTemp, Warning, TEXT("Hit %s"), *hr.Actor.Get()->GetName());
     }
 
     return hr;
+}
+
+const void UGrabber::GetReachLineStartAndEnd(FVector & loc, FVector & end)
+{
+    FRotator rot;
+    GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(loc, rot);
+    end = loc + rot.Vector() * _reach;
 }
 
