@@ -28,6 +28,7 @@ class BUILDINGESCAPE_API UOpenDoor : public UActorComponent
     private:
         void OpenDoor();
         void CloseDoor();
+        float GetMassOfActorsOnPlate();
 
         UPROPERTY(VisibleAnywhere)
         float OpenAngle = 90.f;
@@ -38,7 +39,9 @@ class BUILDINGESCAPE_API UOpenDoor : public UActorComponent
         UPROPERTY(EditAnywhere)
         float DoorCloseDelay = 1.f;
 
+        UPROPERTY(EditAnywhere)
+        float PlateMassThreshold = 50.f;
+
         AActor* Owner;
-        AActor* ActorThatOpens;
         float LastOpenTime = 0.f;
 };
